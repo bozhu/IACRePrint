@@ -1,0 +1,6 @@
+*.pyc
+.idea
+*.swp
+*~
+
+setting.py
