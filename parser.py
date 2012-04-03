@@ -43,6 +43,9 @@ class ePrintParser(HTMLParser):
     def handle_endtag(self, tag):
         if tag == 'dl':
             self.flag_main_content = False
+            if self.entry:
+                self.list_entries.append(self.entry)
+                self.entry = None
         elif tag in ('a', 'em', 'b'):
             self.data_type = None
 
@@ -60,15 +63,19 @@ class ePrintParser(HTMLParser):
             elif self.data_type:
                 self.entry[self.data_type] = data
 
+
 if __name__ == '__main__':
+    req = urllib2.Request('http://eprint.iacr.org/cgi-bin/search.pl?last=1&title=1')
+    f = urllib2.urlopen(req)
+    content = f.read()
+    f.close()
+
     result_list = []
     my_parser = ePrintParser(result_list)
-
-    with open('example.html') as f:
-        content = f.read()
     my_parser.feed(content)
     for i in result_list:
         print i
 
+    print
     print new_or_revised('2010/409')
     print new_or_revised('2012/170')
