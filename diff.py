@@ -37,3 +37,7 @@ if __name__ == '__main__':
     print 'fake diff'
     for i in diff_list:
         print i
+
+    print
+    import cPickle
+    print cPickle.dumps(diff_list)
