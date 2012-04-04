@@ -16,12 +16,16 @@ def new_or_revised(pub_id):
 
 
 class ePrintParser(HTMLParser):
-    def __init__(self, output_list):
+    def __init__(self):
         HTMLParser.__init__(self)
-        self.list_entries = output_list
         self.flag_main_content = False
         self.data_type = None
         self.entry = None
+
+    def feed(self, data):
+        self.list_entries = []
+        HTMLParser.feed(self, data)
+        return self.list_entries
 
     def handle_starttag(self, tag, attrs):
         if tag == 'dl':
@@ -70,12 +74,14 @@ if __name__ == '__main__':
     content = f.read()
     f.close()
 
-    result_list = []
-    my_parser = ePrintParser(result_list)
-    my_parser.feed(content)
+    my_parser = ePrintParser()
+    result_list = my_parser.feed(content)
     for i in result_list:
         print i
 
     print
     print new_or_revised('2010/409')
     print new_or_revised('2012/170')
+
+    print
+    print {'pub_id': '2012/117', 'authors': 'Ran Canetti and Margarita Vald', 'update_type': 'revised', 'title': 'Universally Composable Security With Local Adversaries'} in result_list
