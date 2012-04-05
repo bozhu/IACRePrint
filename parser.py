@@ -38,11 +38,9 @@ def new_or_revised(pub_id):
 
 
 class ePrintParser(HTMLParser):
-    def __init__(self):
-        HTMLParser.__init__(self)
-        self.flag_main_content = False
-        self.data_type = None
-        self.entry = None
+    flag_main_content = False
+    data_type = None
+    entry = None
 
     def feed(self, data):
         self.list_entries = []
@@ -72,12 +70,13 @@ class ePrintParser(HTMLParser):
             if self.entry:
                 self.list_entries.append(self.entry)
                 self.entry = None
+            assert self.data_type == None
         elif tag in ('a', 'em', 'b'):
             self.data_type = None
 
     def handle_data(self, data):
         if self.flag_main_content:
-            if data == 'PDF' and self.data_type == 'link':
+            if data in ('PDF', 'PS', 'PS.GZ') and self.data_type == 'link':
                 self.entry['update_type'] = new_or_revised(self.entry['pub_id'])
                 return
             elif 'withdrawn' in data and self.data_type == None:
@@ -104,6 +103,3 @@ if __name__ == '__main__':
     print
     print new_or_revised('2010/409')
     print new_or_revised('2012/170')
-
-    print
-    print {'pub_id': '2012/117', 'authors': 'Ran Canetti and Margarita Vald', 'update_type': 'revised', 'title': 'Universally Composable Security With Local Adversaries'} in result_list
