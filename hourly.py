@@ -24,7 +24,7 @@ import urllib2
 import cPickle
 
 from google.appengine.ext import db
-from parser import ePrintParser
+from eprint_parser import ePrintParser
 from tweet import tweet
 
 
