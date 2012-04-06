@@ -21,21 +21,13 @@
 """
 
 import webapp2
-import hourly
+import cron_task
+
 
 class HourlyHandler(webapp2.RequestHandler):
     def get(self):
-        hourly.task()
-
-
-class TestHandler(webapp2.RequestHandler):
-    def get(self):
-        hourly.task()
-        self.response.headers['Content-Type'] = 'text/plain'
-        self.response.out.write(hourly.retrieve_data())
-
+        cron_task.task()
 
 app = webapp2.WSGIApplication([
-            ('/hourly', HourlyHandler),
-            ('/test', TestHandler),
+            ('/cron', HourlyHandler),
         ], debug=True)

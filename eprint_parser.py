@@ -1,4 +1,4 @@
-#!/usr/bin/env pypy
+#!/usr/bin/env python
 
 """
     Copyright (C) 2012 Bo Zhu http://about.bozhu.me

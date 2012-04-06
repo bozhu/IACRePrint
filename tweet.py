@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
     Copyright (C) 2012 Bo Zhu http://about.bozhu.me
 
@@ -20,5 +22,49 @@
     DEALINGS IN THE SOFTWARE.
 """
 
+import oauth2 as oauth
+from credentials import             \
+        TWITTER_CONSUMER_KEY,       \
+        TWITTER_CONSUMER_SECRET,    \
+        TWITTER_ACCESS_TOKEN,       \
+        TWITTER_ACCESS_TOKEN_SECRET
+
+
+def tweet_format(entry):
+    ret = 'status='
+    ret += '[' + entry['update_type'].capitalize() + ']'
+    ret += ' ' + entry['title']
+    ret += ' (' + entry['authors'] + ') '
+
+    if len(ret) > 102:  # 140 - 32 - 6
+        ret = ret[:99] + '...'
+
+    ret += ' http://eprint.iacr.org/' + entry['pub_id']
+
+    return ret
+
+
 def tweet(list_entries):
-    pass
+    consumer = oauth.Consumer(key=TWITTER_CONSUMER_KEY,
+            secret=TWITTER_CONSUMER_SECRET)
+    token = oauth.Token(key=TWITTER_ACCESS_TOKEN,
+            secret=TWITTER_ACCESS_TOKEN_SECRET)
+    client = oauth.Client(consumer, token)
+
+    for entry in list_entries:
+        resp, content = client.request(
+                'https://api.twitter.com/1/statuses/update.json',
+                method='POST',
+                body=tweet_format(entry),
+                force_auth_header=True)
+        if resp['status'] != '200':
+            pass  # error handling
+
+
+if __name__ == '__main__':
+    entries = [
+        {'pub_id': '2012/162', 'authors': 'Jayaprakash Kar', 'update_type': 'revised', 'title': 'Provably Secure Online/Off-line Identity-Based Signature Scheme  for Wireless Sensor Network'},
+        {'pub_id': '2012/152', 'authors': 'Limin Shen, Yinxia Sun', 'update_type': 'revised', 'title': 'On security of a Certificateless Aggregate Signature Scheme'},
+        {'pub_id': '2011/566', 'authors': 'Craig Gentry and Shai Halevi and Nigel P. Smart', 'update_type': 'revised', 'title': 'Fully Homomorphic Encryption with Polylog Overhead'},
+    ]
+    tweet(entries)
