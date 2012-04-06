@@ -5,5 +5,13 @@ api_version: 1
 threadsafe: true
 
 handlers:
+- url: /hourly
+  script: web.app
+  login: admin
+
+- url: /test
+  script: web.app
+  login: admin
+
 - url: /.*
-  script: main.app
+  script: web.app
