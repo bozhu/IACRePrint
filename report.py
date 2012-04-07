@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
     Copyright (C) 2012 Bo Zhu http://about.bozhu.me
 
@@ -20,22 +22,9 @@
     DEALINGS IN THE SOFTWARE.
 """
 
-import webapp2
-import cron_task
-import report
-import time
+from google.appengine.api import mail
+from credentials import ADMIN_EMAIL, ERROR_HANDLING_EMAIL
 
 
-class HourlyHandler(webapp2.RequestHandler):
-    def get(self):
-        try:
-            cron_task.task()
-        except Exception as detail:
-            report.send_email(
-                    'eprint-updates err: ' + str(detail),
-                    'as the title\n\n' + time.ctime()
-            )
-
-app = webapp2.WSGIApplication([
-            ('/cron', HourlyHandler),
-        ], debug=True)
+def send_email(title, body):
+    mail.send_mail(ADMIN_EMAIL, ERROR_HANDLING_EMAIL, title, body)

@@ -28,6 +28,8 @@ from credentials import             \
         TWITTER_CONSUMER_SECRET,    \
         TWITTER_ACCESS_TOKEN,       \
         TWITTER_ACCESS_TOKEN_SECRET
+import report
+import time
 
 
 def tweet_format(entry):
@@ -58,13 +60,18 @@ def tweet(list_entries):
                 body=tweet_format(entry),
                 force_auth_header=True)
         if resp['status'] != '200':
-            pass  # error handling
+            report.send_email(
+                    'eprint-updates: tweet err code ' + resp['status'],
+                    content + '\n\n' + time.ctime()
+            )
+
 
 
 if __name__ == '__main__':
     entries = [
         {'pub_id': '2012/162', 'authors': 'Jayaprakash Kar', 'update_type': 'revised', 'title': 'Provably Secure Online/Off-line Identity-Based Signature Scheme  for Wireless Sensor Network'},
-        {'pub_id': '2012/152', 'authors': 'Limin Shen, Yinxia Sun', 'update_type': 'revised', 'title': 'On security of a Certificateless Aggregate Signature Scheme'},
-        {'pub_id': '2011/566', 'authors': 'Craig Gentry and Shai Halevi and Nigel P. Smart', 'update_type': 'revised', 'title': 'Fully Homomorphic Encryption with Polylog Overhead'},
+        #{'pub_id': '2012/162', 'authors': 'Jayaprakash Kar', 'update_type': 'revised', 'title': 'Provably Secure Online/Off-line Identity-Based Signature Scheme  for Wireless Sensor Network'},
+        #{'pub_id': '2012/152', 'authors': 'Limin Shen, Yinxia Sun', 'update_type': 'revised', 'title': 'On security of a Certificateless Aggregate Signature Scheme'},
+        #{'pub_id': '2011/566', 'authors': 'Craig Gentry and Shai Halevi and Nigel P. Smart', 'update_type': 'revised', 'title': 'Fully Homomorphic Encryption with Polylog Overhead'},
     ]
     tweet(entries)

@@ -2,5 +2,4 @@ A Google App Engine (GAE) application for tracking the recent updates of IACR eP
 
 ### TODO
 * testing
-* error handling mechanism
 * a homepage for description
