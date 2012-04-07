@@ -1,5 +1,1 @@
-A Google App Engine (GAE) application for tracking the recent updates of IACR ePrint archive (http://eprint.iacr.org/)
-
-### TODO
-* testing
-* a homepage for description
+A Google App Engine (GAE) application for tracking the updates of [IACR Cryptology ePrint Archive](http://eprint.iacr.org/).
