@@ -2,7 +2,7 @@ A Google App Engine (GAE) application for tracking the updates of [IACR Cryptolo
 
 Please check http://eprint-updates.appspot.com/.
 
-Under the MIT license.
+Under the MIT license. For the underlying libraries, [httplib2](http://code.google.com/p/httplib2/) and [oauth2](https://github.com/brosner/python-oauth2), please check their own licenses.
 
     Copyright (C) 2012 Bo Zhu http://about.bozhu.me
 
