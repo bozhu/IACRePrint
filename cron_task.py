@@ -62,9 +62,9 @@ def task():
     curr_list = my_parser.feed(curr_html)
 
     prev_data = retrieve_data()
+    store_data(cPickle.dumps(curr_list))
     if prev_data is not None:
         prev_list = cPickle.loads(prev_data)
         list_updated = [i for i in curr_list if i not in prev_list]
         if len(list_updated):
             tweet(list_updated)
-    store_data(cPickle.dumps(curr_list))
