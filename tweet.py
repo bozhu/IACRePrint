@@ -29,21 +29,20 @@ from credentials import             \
         TWITTER_ACCESS_TOKEN,       \
         TWITTER_ACCESS_TOKEN_SECRET
 import report
-import time
 
 
 def tweet_format(entry):
-    ret = 'status='
-    ret += '[' + entry['update_type'].capitalize() + ']'
+    ret = '[' + entry['update_type'].capitalize() + ']'
     ret += ' ' + entry['title']
     ret += ' (' + entry['authors'] + ') '
 
-    if len(ret) > 102:  # 140 - 32 - 6
-        ret = ret[:99] + '...'
+    if len(ret) > 108:  # 140 - 32
+        ret = ret[:105] + '...'
 
-    ret += ' http://eprint.iacr.org/' + entry['pub_id']
+    ret += ' http://eprint.iacr.org/' + entry['pub_id']  # len is 32
 
-    return ret
+    assert len(ret) <= 140
+    return ret  # does it need urlencode?
 
 
 def tweet(list_entries):
@@ -54,15 +53,16 @@ def tweet(list_entries):
     client = oauth.Client(consumer, token)
 
     for entry in list_entries:
+        post_data = 'status=' + tweet_format(entry)
         resp, content = client.request(
                 'https://api.twitter.com/1/statuses/update.json',
                 method='POST',
-                body=tweet_format(entry),
+                body=post_data,
                 force_auth_header=True)
         if resp['status'] != '200':
             report.send_email(
                     'eprint-updates: tweet err code ' + resp['status'],
-                    content + '\n\n' + time.ctime()
+                    content
             )
 
 

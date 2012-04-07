@@ -24,7 +24,9 @@
 
 from google.appengine.api import mail
 from credentials import ADMIN_EMAIL, ERROR_HANDLING_EMAIL
+import time
 
 
 def send_email(title, body):
-    mail.send_mail(ADMIN_EMAIL, ERROR_HANDLING_EMAIL, title, body)
+    mail.send_mail(ADMIN_EMAIL, ERROR_HANDLING_EMAIL,
+            title, body + '\n\n' + time.ctime())

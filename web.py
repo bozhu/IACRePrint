@@ -23,7 +23,6 @@
 import webapp2
 import cron_task
 import report
-import time
 
 
 class HourlyHandler(webapp2.RequestHandler):
@@ -33,7 +32,7 @@ class HourlyHandler(webapp2.RequestHandler):
         except Exception as detail:
             report.send_email(
                     'eprint-updates err: ' + str(detail),
-                    'as the title\n\n' + time.ctime()
+                    'as the title'
             )
 
 app = webapp2.WSGIApplication([
