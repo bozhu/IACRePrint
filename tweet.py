@@ -61,7 +61,7 @@ def tweet(list_entries):
         if resp['status'] != '200':
             import report
             report.send_email(
-                    'eprint-updates: tweet err code ' + resp['status'],
+                    'tweet err code ' + resp['status'],
                     content + '\n\n' + str(list_entries)
             )
 

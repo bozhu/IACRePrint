@@ -32,7 +32,7 @@ class HourlyHandler(webapp2.RequestHandler):
             import report
             import trackback
             report.send_email(
-                    str(detail),
+                    str(detail).split('\n')[0],  # title shouldn't be too long
                     trackback.format_exc()
             )
 
