@@ -22,13 +22,12 @@
     DEALINGS IN THE SOFTWARE.
 """
 
-import oauth2 as oauth
+import oauth2
 from credentials import             \
         TWITTER_CONSUMER_KEY,       \
         TWITTER_CONSUMER_SECRET,    \
         TWITTER_ACCESS_TOKEN,       \
         TWITTER_ACCESS_TOKEN_SECRET
-import report
 
 
 def tweet_format(entry):
@@ -46,11 +45,11 @@ def tweet_format(entry):
 
 
 def tweet(list_entries):
-    consumer = oauth.Consumer(key=TWITTER_CONSUMER_KEY,
+    consumer = oauth2.Consumer(key=TWITTER_CONSUMER_KEY,
             secret=TWITTER_CONSUMER_SECRET)
-    token = oauth.Token(key=TWITTER_ACCESS_TOKEN,
+    token = oauth2.Token(key=TWITTER_ACCESS_TOKEN,
             secret=TWITTER_ACCESS_TOKEN_SECRET)
-    client = oauth.Client(consumer, token)
+    client = oauth2.Client(consumer, token)
 
     for entry in list_entries:
         post_data = 'status=' + tweet_format(entry)
@@ -60,6 +59,7 @@ def tweet(list_entries):
                 body=post_data,
                 force_auth_header=True)
         if resp['status'] != '200':
+            import report
             report.send_email(
                     'eprint-updates: tweet err code ' + resp['status'],
                     content + '\n\n' + str(list_entries)
