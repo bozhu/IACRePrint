@@ -26,8 +26,21 @@ from HTMLParser import HTMLParser
 import urllib2
 
 
+common_headers = {
+    "Accept":           "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language":  "en-us,en;q=0.5",
+    "Accept-Encoding":  "deflate",
+    "Accept-Charset":   "ISO-8859-1,utf-8;q=0.7,*;q=0.7",
+    "Connection":       "keep-alive",
+    "User-Agent":       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:7.0.1) Gecko/20100101 Firefox/7.0.1",
+}
+
+
 def new_or_revised(pub_id):
-    req = urllib2.Request('http://eprint.iacr.org/cgi-bin/versions.pl?entry=' + pub_id)
+    req = urllib2.Request(
+        'http://eprint.iacr.org/cgi-bin/versions.pl?entry=' + pub_id,
+        headers=common_headers
+    )
     f = urllib2.urlopen(req)
     content = f.read()
     f.close()

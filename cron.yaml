@@ -1,4 +1,4 @@
 cron:
 - description: check eprint updates
   url: /cron
-  schedule: every 3 minutes synchronized
+  schedule: every 5 minutes synchronized

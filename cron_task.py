@@ -26,7 +26,7 @@ import urllib2
 import cPickle
 
 from google.appengine.ext import db
-from eprint_parser import ePrintParser
+from eprint_parser import ePrintParser, common_headers
 from tweet import tweet
 
 
@@ -53,7 +53,7 @@ def retrieve_data():
 
 
 def task():
-    req = urllib2.Request(IACR_ePrint_URL)
+    req = urllib2.Request(IACR_ePrint_URL, headers=common_headers)
     f = urllib2.urlopen(req)
     curr_html = f.read()
     f.close()
