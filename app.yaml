@@ -9,6 +9,10 @@ handlers:
   script: web.app
   login: admin
 
+- url: /test
+  script: web.app
+  login: admin
+
 - url: /.*
   static_files: static/index.html
   upload: static/index.html

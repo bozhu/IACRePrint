@@ -27,14 +27,19 @@ import report
 
 class HourlyHandler(webapp2.RequestHandler):
     def get(self):
-        try:
+#        try:
             cron_task.task()
-        except Exception as detail:
-            report.send_email(
-                    'eprint-updates err: ' + str(detail),
-                    'as the title'
-            )
+#        except Exception as detail:
+#            report.send_email(
+#                    'eprint-updates err: ' + str(detail),
+#                    'as the title'
+#            )
+
+class TestHandler(webapp2.RequestHandler):
+    def get(self):
+        cron_task.task()
 
 app = webapp2.WSGIApplication([
             ('/cron', HourlyHandler),
+            ('/test', TestHandler),
         ], debug=True)
