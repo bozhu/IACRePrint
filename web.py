@@ -22,17 +22,18 @@
 
 import webapp2
 import cron_task
+import logging
 
 
-class HourlyHandler(webapp2.RequestHandler):
+class CronHandler(webapp2.RequestHandler):
     def get(self):
         try:
             cron_task.task()
         except Exception as detail:
-            import report
+            from report import report_error
             import trackback
-            report.send_email(
-                    str(detail).split('\n')[0],  # title shouldn't be too long
+            report_error(
+                    str(detail).splitlines()[0],  # title shouldn't be too long
                     trackback.format_exc()
             )
 
@@ -42,7 +43,10 @@ class TestHandler(webapp2.RequestHandler):
         cron_task.task()
 
 
+# is here a proper position for setting log level?
+logging.getLogger().setLevel(logging.DEBUG)
+
 app = webapp2.WSGIApplication([
-            ('/cron', HourlyHandler),
+            ('/cron', CronHandler),
             ('/test', TestHandler),
         ], debug=True)

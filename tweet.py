@@ -23,6 +23,7 @@
 """
 
 import oauth2
+import urllib
 from credentials import             \
         TWITTER_CONSUMER_KEY,       \
         TWITTER_CONSUMER_SECRET,    \
@@ -41,7 +42,7 @@ def tweet_format(entry):
     ret += ' http://eprint.iacr.org/' + entry['pub_id']  # len is 32
 
     assert len(ret) <= 140
-    return ret  # does it need urlencode?
+    return ret  # does urlencode affect the 140 char len limit?
 
 
 def tweet(list_entries):
@@ -52,15 +53,15 @@ def tweet(list_entries):
     client = oauth2.Client(consumer, token)
 
     for entry in list_entries:
-        post_data = 'status=' + tweet_format(entry)
+        post_data = urllib.urlencode({'status': tweet_format(entry)})
         resp, content = client.request(
                 'https://api.twitter.com/1/statuses/update.json',
                 method='POST',
                 body=post_data,
                 force_auth_header=True)
         if resp['status'] != '200':
-            import report
-            report.send_email(
+            from report import report_error
+            report_error(
                     'tweet err code ' + resp['status'],
                     content + '\n\n' + str(list_entries)
             )
