@@ -23,28 +23,33 @@
 """
 
 from HTMLParser import HTMLParser
-import urllib2
+from google.appengine.api import urlfetch
 
 
 common_headers = {
-    "Accept":           "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language":  "en-us,en;q=0.5",
-    "Accept-Encoding":  "deflate",
-    "Accept-Charset":   "ISO-8859-1,utf-8;q=0.7,*;q=0.7",
-    "Connection":       "keep-alive",
-    "User-Agent":       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:7.0.1) Gecko/20100101 Firefox/7.0.1",
+    "Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-us,en;q=0.5",
+    "Accept-Encoding": "deflate",
+    "Accept-Charset":  "ISO-8859-1,utf-8;q=0.7,*;q=0.7",
+    "Connection":      "keep-alive",
+    "User-Agent":      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:7.0.1) Gecko/20100101 Firefox/7.0.1",
 }
 
 
 def new_or_revised(pub_id):
-    req = urllib2.Request(
+    result = urlfetch.fetch(
         'http://eprint.iacr.org/cgi-bin/versions.pl?entry=' + pub_id,
-        headers=common_headers
+        headers=common_headers,
+        deadline=30
     )
-    f = urllib2.urlopen(req)
-    content = f.read()
-    f.close()
-    if content.count('posted') > 1:
+
+    if result.status_code != 200:
+        # need to abort the program, so just simply assert false
+        assert False, 'new_or_revised urlfetch err: ' \
+                + str(result.status_code)    \
+                + '\n\n' + result.content
+
+    if result.content.count('posted') > 1:
         return 'revised'
     else:
         return 'new'
@@ -103,16 +108,4 @@ class ePrintParser(HTMLParser):
 
 
 if __name__ == '__main__':
-    req = urllib2.Request('http://eprint.iacr.org/cgi-bin/search.pl?last=1&title=1')
-    f = urllib2.urlopen(req)
-    content = f.read()
-    f.close()
-
-    my_parser = ePrintParser()
-    result_list = my_parser.feed(content)
-    for i in result_list:
-        print i
-
-    print
-    print new_or_revised('2010/409')
-    print new_or_revised('2012/170')
+    pass

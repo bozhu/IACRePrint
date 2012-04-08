@@ -22,15 +22,11 @@
     DEALINGS IN THE SOFTWARE.
 """
 
-import urllib2
 import cPickle
-
+from google.appengine.api import urlfetch
 from google.appengine.ext import db
 from eprint_parser import ePrintParser, common_headers
 from tweet import tweet
-
-
-IACR_ePrint_URL = 'http://eprint.iacr.org/cgi-bin/search.pl?last=2&title=1'
 
 
 class ePrintData(db.Model):
@@ -53,13 +49,20 @@ def retrieve_data():
 
 
 def task():
-    req = urllib2.Request(IACR_ePrint_URL, headers=common_headers)
-    f = urllib2.urlopen(req)
-    curr_html = f.read()
-    f.close()
+    result = urlfetch.fetch(
+            'http://eprint.iacr.org/cgi-bin/search.pl?last=2&title=1',
+            headers=common_headers,
+            deadline=30
+    )
+
+    if result.status_code != 200:
+        # need to abort the program, so just simply assert false
+        assert False, 'task urlfetch err: ' \
+                + str(result.status_code)   \
+                + '\n\n' + result.content
 
     my_parser = ePrintParser()
-    curr_list = my_parser.feed(curr_html)
+    curr_list = my_parser.feed(result.content)
 
     prev_data = retrieve_data()
     if prev_data != None:

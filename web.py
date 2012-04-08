@@ -32,7 +32,7 @@ class HourlyHandler(webapp2.RequestHandler):
             import report
             import trackback
             report.send_email(
-                    'eprint-updates err: ' + str(detail),
+                    str(detail),
                     trackback.format_exc()
             )
 
@@ -40,6 +40,7 @@ class HourlyHandler(webapp2.RequestHandler):
 class TestHandler(webapp2.RequestHandler):
     def get(self):
         cron_task.task()
+
 
 app = webapp2.WSGIApplication([
             ('/cron', HourlyHandler),
