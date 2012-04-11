@@ -34,13 +34,13 @@ class ePrintData(db.Model):
 
 
 def store_data(data):
-    eprint_db = ePrintData(key_name='only_you')
+    eprint_db = ePrintData(key_name='31days')
     eprint_db.data = db.Blob(data)
     eprint_db.put()
 
 
 def retrieve_data():
-    data_key = db.Key.from_path('ePrintData', 'only_you')
+    data_key = db.Key.from_path('ePrintData', '31days')
     data_class = db.get(data_key)
     if data_class:
         return data_class.data
@@ -50,7 +50,7 @@ def retrieve_data():
 
 def task():
     result = urlfetch.fetch(
-            'http://eprint.iacr.org/cgi-bin/search.pl?last=2&title=1',
+            'http://eprint.iacr.org/cgi-bin/search.pl?last=31&title=1',
             headers=common_headers,
             deadline=30
     )
