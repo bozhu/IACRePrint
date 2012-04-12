@@ -5,6 +5,18 @@
         <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
         <meta name="description" content="An unofficial twitter feed for updates of the IACR Cryptology ePrint Archive." />
         <meta name="keywords" content="IACR, ePrint, Updates, Cryptography, Cryptology" />
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        <script type="text/javascript" src="jquery.tweet.js"></script>
+        <script type='text/javascript'>
+            jQuery(function($){
+                $(".tweet").tweet({
+                    username: "IACRePrint",
+                    count: 5,
+                    loading_text: "loading tweets..."
+                });
+            });
+        </script>
+        <link media="all" rel="stylesheet" type="text/css" href="jquery.tweet.css"/>
         <style>
             body {
                 font-family: Verdana, "Bitstream Vera Sans", "DejaVu Sans", Tahoma, Geneva, Arial, Sans-serif;
@@ -16,7 +28,7 @@
             }
 
             #wrapper {
-                max-width: 512px;
+                max-width: 768px;
                 margin: 0 auto;
             }
 
@@ -72,6 +84,7 @@
                 The tweets are formatted as <i>"[update_type] title (authors) iacr_link"</i>. If it is too long (over the 140 char limit), the part before <i>iacr_link</i> will be truncated.
                 </p>
             </div>
+            <div class="tweet"></div>
             <div id='contact'>
                 <a href='mailto:eprint-updates@bozhu.me'>Contact Us</a>
             </div>
