@@ -1,6 +1,6 @@
 A Google App Engine (GAE) application for tracking updates of [the IACR Cryptology ePrint Archive](http://eprint.iacr.org/).
 
-Please check http://eprint-updates.appspot.com/.
+Please check https://eprint-updates.appspot.com/.
 
 Under the MIT license. For the underlying libraries, [httplib2](http://code.google.com/p/httplib2/) and [oauth2](https://github.com/brosner/python-oauth2), please check their own licenses.
 

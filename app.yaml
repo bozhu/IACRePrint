@@ -8,15 +8,19 @@ handlers:
 - url: /cron
   script: web.app
   login: admin
+  secure: always
 
 - url: /test
   script: web.app
   login: admin
+  secure: always
 
 - url: /(.*\.(js|css))
   static_files: static/\1
   upload: static/(.*\.(js|css))
+  secure: always
 
 - url: /.*
   static_files: static/index.html
   upload: static/index.html
+  secure: always
