@@ -29,6 +29,7 @@ from credentials import             \
         TWITTER_CONSUMER_SECRET,    \
         TWITTER_ACCESS_TOKEN,       \
         TWITTER_ACCESS_TOKEN_SECRET
+from report import report_error
 
 
 def tweet_format(entry):
@@ -71,7 +72,7 @@ def tweet(list_entries):
                 body=post_data,
                 force_auth_header=True)
 
-        if resp['state'] == 401:
+        if resp['status'] == 401 and 'not authenticate' in content:
             # sometimes not stable (don't know why), just try it again
             client = create_oauth_client()
             resp, content = client.request(
@@ -80,14 +81,23 @@ def tweet(list_entries):
                   body=post_data,
                   force_auth_header=True)
 
-        if resp['status'] != '200':
-            # if it still doesn't work
-            unfinished_entries.append(entry)
-            from report import report_error
+        if resp['status'] == 403 and 'duplicate' in content:
+            # report but continue to the next entry
             report_error(
                     'tweet err code ' + resp['status'],
                     content + '\n\n' + str(entry) + '\n\n' + str(list_entries)
             )
+            continue
+
+        if resp['status'] != '200':
+            # if it still doesn't work
+            unfinished_entries.append(entry)
+            report_error(
+                    'tweet err code ' + resp['status'],
+                    content + '\n\n' + str(entry) + '\n\n' + str(list_entries)
+            )
+
+        return unfinished_entries
 
 
 if __name__ == '__main__':
