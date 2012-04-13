@@ -97,7 +97,7 @@ def tweet(list_entries):
                     content + '\n\n' + str(entry) + '\n\n' + str(list_entries)
             )
 
-        return unfinished_entries
+    return unfinished_entries
 
 
 if __name__ == '__main__':
