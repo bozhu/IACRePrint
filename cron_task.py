@@ -69,7 +69,8 @@ def task():
         prev_list = cPickle.loads(prev_data)
         list_updated = [i for i in curr_list if i not in prev_list]
         if len(list_updated):
-            tweet(list_updated)
-            store_data(cPickle.dumps(curr_list))
+            list_untweeted = tweet(list_updated)
+            list_to_save = [i for i in curr_list if i not in list_untweeted]
+            store_data(cPickle.dumps(list_to_save))
     else:
         store_data(cPickle.dumps(curr_list))

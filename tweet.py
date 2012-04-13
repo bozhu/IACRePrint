@@ -36,21 +36,32 @@ def tweet_format(entry):
     ret += ' ' + entry['title']
     ret += ' (' + entry['authors'] + ') '
 
-    if len(ret) > 108:  # 140 - 32
-        ret = ret[:105] + '...'
+    #if len(ret) > 108:  # 140 - 32
+        #ret = ret[:105] + '...'
+    if len(ret) > 119:  # 140 - 20 - 1
+        ret = ret[:116] + '...'
 
-    ret += ' http://eprint.iacr.org/' + entry['pub_id']  # len is 32
+    ret += ' http://eprint.iacr.org/' + entry['pub_id']
+    # the len of the above link string is 32
+    # however the t.co wrapper will result in a 20-char link
 
-    assert len(ret) <= 140
-    return ret  # does urlencode affect the 140 char len limit?
+    assert len(ret) <= 140 + 32 - 21
+    return ret
 
 
-def tweet(list_entries):
+def create_oauth_client():
     consumer = oauth2.Consumer(key=TWITTER_CONSUMER_KEY,
             secret=TWITTER_CONSUMER_SECRET)
     token = oauth2.Token(key=TWITTER_ACCESS_TOKEN,
             secret=TWITTER_ACCESS_TOKEN_SECRET)
-    client = oauth2.Client(consumer, token)
+    new_client = oauth2.Client(consumer, token)
+
+    return new_client
+
+
+def tweet(list_entries):
+    client = create_oauth_client()
+    unfinished_entries = []
 
     for entry in list_entries:
         post_data = urllib.urlencode({'status': tweet_format(entry)})
@@ -59,17 +70,33 @@ def tweet(list_entries):
                 method='POST',
                 body=post_data,
                 force_auth_header=True)
+
+        if resp['state'] == 401:
+            # sometimes not stable (don't know why), just try it again
+            client = create_oauth_client()
+            resp, content = client.request(
+                  'https://api.twitter.com/1/statuses/update.json',
+                  method='POST',
+                  body=post_data,
+                  force_auth_header=True)
+
         if resp['status'] != '200':
+            # if it still doesn't work
+            unfinished_entries.append(entry)
             from report import report_error
             report_error(
                     'tweet err code ' + resp['status'],
-                    content + '\n\n' + str(list_entries)
+                    content + '\n\n' + str(entry) + '\n\n' + str(list_entries)
             )
 
 
 if __name__ == '__main__':
-    entries = [
-        {'pub_id': '1900/123', 'authors': 'Bob and Alice',
-            'update_type': 'revised', 'title': 'This is the paper title'},
-    ]
-    tweet(entries)
+    entries = [{
+        'pub_id': '1900/123',
+        'authors': 'Alice and Bob and Charlie and David and Eve',
+        'update_type': 'revised',
+        'title': 'This is a very very long paper title for testing' \
+                + 'the 140 char limits'
+    }]
+    print len(tweet_format(entries[0]))
+    #tweet(entries)
