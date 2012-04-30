@@ -23,20 +23,22 @@
 """
 
 from HTMLParser import HTMLParser
-from google.appengine.api import urlfetch
 
 
 common_headers = {
-    "Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept":          "text/html,application/xhtml+xml,application/xml;" \
+                       + "q=0.9,*/*;q=0.8",
     "Accept-Language": "en-us,en;q=0.5",
     "Accept-Encoding": "deflate",
     "Accept-Charset":  "ISO-8859-1,utf-8;q=0.7,*;q=0.7",
     "Connection":      "keep-alive",
-    "User-Agent":      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:7.0.1) Gecko/20100101 Firefox/7.0.1",
+    "User-Agent":      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; "    \
+                       + "rv:7.0.1) Gecko/20100101 Firefox/7.0.1",
 }
 
 
 def new_or_revised(pub_id):
+    from google.appengine.api import urlfetch
     result = urlfetch.fetch(
         'http://eprint.iacr.org/cgi-bin/versions.pl?entry=' + pub_id,
         headers=common_headers,
@@ -59,9 +61,11 @@ class ePrintParser(HTMLParser):
     flag_main_content = False
     data_type = None
     entry = None
+    debug = False
 
-    def feed(self, data):
-        self.list_entries = []
+    def feed(self, data, debug=False):
+        self.debug = debug
+        self.list_entries = list()
         HTMLParser.feed(self, data)
         return self.list_entries
 
@@ -95,7 +99,11 @@ class ePrintParser(HTMLParser):
     def handle_data(self, data):
         if self.flag_main_content:
             if data in ('PDF', 'PS', 'PS.GZ') and self.data_type == 'link':
-                self.entry['update_type'] = new_or_revised(self.entry['pub_id'])
+                if self.debug:
+                    self.entry['update_type'] = 'debug'
+                else:
+                    self.entry['update_type'] = \
+                            new_or_revised(self.entry['pub_id'])
                 return
             elif 'withdrawn' in data and self.data_type == None:
                 self.entry['update_type'] = 'withdrawn'
@@ -104,8 +112,27 @@ class ePrintParser(HTMLParser):
             if self.data_type == 'link':
                 self.entry['pub_id'] = data
             elif self.data_type:
-                self.entry[self.data_type] = data
+                try:
+                    unicode_data = data.decode('latin-1')
+                except:
+                    unicode_data = data.decode('utf-8')
+                self.entry[self.data_type] = unicode_data
 
 
 if __name__ == '__main__':
-    pass
+    import urllib2
+    f = urllib2.urlopen(
+            'http://eprint.iacr.org/cgi-bin/search.pl?last=7&title=1')
+    content = f.read()
+    f.close()
+
+    my_parser = ePrintParser()
+    entries = my_parser.feed(content, debug=True)
+    for i in entries:
+        if i['pub_id'] == '2012/232':
+            break
+    print type(i['authors'])
+
+    import pprint
+    pprint.pprint(i)
+    print i['authors']

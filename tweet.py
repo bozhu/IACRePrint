@@ -23,28 +23,31 @@
 """
 
 import oauth2
-import urllib
+#import urllib
 from credentials import             \
         TWITTER_CONSUMER_KEY,       \
         TWITTER_CONSUMER_SECRET,    \
         TWITTER_ACCESS_TOKEN,       \
         TWITTER_ACCESS_TOKEN_SECRET
 from report import report_error
+from unidecode import unidecode
 
 
 def tweet_format(entry):
-    ret = '[' + entry['update_type'].capitalize() + ']'
-    ret += ' ' + entry['title']
-    ret += ' (' + entry['authors'] + ') '
+    ret = u'[' + unicode(entry['update_type']).capitalize() + u']'
+    ret += u' ' + entry['title']
+    ret += u' (' + entry['authors'] + u') '
 
     #if len(ret) > 108:  # 140 - 32
         #ret = ret[:105] + '...'
     if len(ret) > 119:  # 140 - 20 - 1
-        ret = ret[:116] + '...'
+        ret = ret[:116] + u'...'
 
-    ret += ' http://eprint.iacr.org/' + entry['pub_id']
+    ret += u' http://eprint.iacr.org/' + unicode(entry['pub_id'])
     # the len of the above link string is 32
     # however the t.co wrapper will result in a 20-char link
+
+    ret = unidecode(ret)  # the tweet package cannot input non-ascii msg
 
     assert len(ret) <= 140 + 32 - 21
     return ret
@@ -65,7 +68,8 @@ def tweet(list_entries):
     unfinished_entries = []
 
     for entry in list_entries:
-        post_data = urllib.urlencode({'status': tweet_format(entry)})
+        #post_data = urllib.urlencode({'status': tweet_format(entry)})
+        post_data = 'status=' + tweet_format(entry)
         resp, content = client.request(
                 'https://api.twitter.com/1/statuses/update.json',
                 method='POST',

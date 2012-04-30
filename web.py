@@ -31,10 +31,10 @@ class CronHandler(webapp2.RequestHandler):
             cron_task.task()
         except Exception as detail:
             from report import report_error
-            import trackback
+            import traceback
             report_error(
                     str(detail).splitlines()[0],  # title shouldn't be too long
-                    trackback.format_exc()
+                    traceback.format_exc()
             )
 
 
