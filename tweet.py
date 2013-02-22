@@ -38,18 +38,21 @@ def tweet_format(entry):
     ret += u' ' + entry['title']
     ret += u' (' + entry['authors'] + u') '
 
-    #if len(ret) > 108:  # 140 - 32
-        #ret = ret[:105] + '...'
-    if len(ret) > 119:  # 140 - 20 - 1
-        ret = ret[:116] + u'...'
+    if len(ret) > 108:  # 140 - 32
+        ret = ret[:105] + u'...'
+    # if len(ret) > 119:  # 140 - 20 - 1
+        # ret = ret[:116] + u'...'
 
     ret += u' http://eprint.iacr.org/' + unicode(entry['pub_id'])
-    # the len of the above link string is 32
-    # however the t.co wrapper will result in a 20-char link
+    # > the len of the above link string is 32
+    # > however the t.co wrapper will result in a 20-char link
+    # just found the lengths of t.co short links are increasing
+    # so we'd better keep a large margin for the string lengths
 
     ret = unidecode(ret)  # the tweet package cannot input non-ascii msg
 
-    assert len(ret) <= 140 + 32 - 21
+    assert len(ret) <= 140
+    # assert len(ret) <= 140 + 32 - 21
     return ret
 
 
@@ -109,7 +112,7 @@ if __name__ == '__main__':
         'pub_id': '1900/123',
         'authors': 'Alice and Bob and Charlie and David and Eve',
         'update_type': 'revised',
-        'title': 'This is a very very long paper title for testing' \
+        'title': 'This is a very very long paper title for testing'
                 + 'the 140 char limits'
     }]
     print len(tweet_format(entries[0]))

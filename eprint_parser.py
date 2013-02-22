@@ -26,13 +26,13 @@ from HTMLParser import HTMLParser
 
 
 common_headers = {
-    "Accept":          "text/html,application/xhtml+xml,application/xml;" \
+    "Accept":          "text/html,application/xhtml+xml,application/xml;"
                        + "q=0.9,*/*;q=0.8",
     "Accept-Language": "en-us,en;q=0.5",
     "Accept-Encoding": "deflate",
     "Accept-Charset":  "ISO-8859-1,utf-8;q=0.7,*;q=0.7",
     "Connection":      "keep-alive",
-    "User-Agent":      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; "    \
+    "User-Agent":      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; "
                        + "rv:7.0.1) Gecko/20100101 Firefox/7.0.1",
 }
 
@@ -92,7 +92,7 @@ class ePrintParser(HTMLParser):
             if self.entry:
                 self.list_entries.append(self.entry)
                 self.entry = None
-            assert self.data_type == None
+            assert self.data_type is None
         elif tag in ('a', 'em', 'b'):
             self.data_type = None
 
@@ -105,7 +105,7 @@ class ePrintParser(HTMLParser):
                     self.entry['update_type'] = \
                             new_or_revised(self.entry['pub_id'])
                 return
-            elif 'withdrawn' in data and self.data_type == None:
+            elif 'withdrawn' in data and self.data_type is None:
                 self.entry['update_type'] = 'withdrawn'
                 return
 
