@@ -74,7 +74,7 @@ def tweet(list_entries):
         #post_data = urllib.urlencode({'status': tweet_format(entry)})
         post_data = 'status=' + tweet_format(entry)
         resp, content = client.request(
-                'https://api.twitter.com/1/statuses/update.json',
+                'https://api.twitter.com/1.1/statuses/update.json',
                 method='POST',
                 body=post_data,
                 force_auth_header=True)
@@ -83,7 +83,7 @@ def tweet(list_entries):
             # sometimes not stable (don't know why), just try it again
             client = create_oauth_client()
             resp, content = client.request(
-                  'https://api.twitter.com/1/statuses/update.json',
+                  'https://api.twitter.com/1.1/statuses/update.json',
                   method='POST',
                   body=post_data,
                   force_auth_header=True)
@@ -112,8 +112,8 @@ if __name__ == '__main__':
         'pub_id': '1900/123',
         'authors': 'Alice and Bob and Charlie and David and Eve',
         'update_type': 'revised',
-        'title': 'This is a very very long paper title for testing'
+        'title': 'This is a very very long paper title for testing '
                 + 'the 140 char limits'
     }]
     print len(tweet_format(entries[0]))
-    #tweet(entries)
+    # tweet(entries)
