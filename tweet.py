@@ -31,28 +31,21 @@ from credentials import             \
         TWITTER_ACCESS_TOKEN_SECRET
 from report import report_error
 from unidecode import unidecode
+import json
 
 
-def tweet_format(entry):
+def tweet_format(entry, t_co_len):
     ret = u'[' + unicode(entry['update_type']).capitalize() + u']'
     ret += u' ' + entry['title']
     ret += u' (' + entry['authors'] + u') '
 
-    if len(ret) > 108:  # 140 - 32
-        ret = ret[:105] + u'...'
-    # if len(ret) > 119:  # 140 - 20 - 1
-        # ret = ret[:116] + u'...'
-
+    if len(ret) > 140 - t_co_len - 1:  # -1 for an extra space
+        ret = ret[:(140 - t_co_len - 1 - 3)] + u'...'
     ret += u' http://eprint.iacr.org/' + unicode(entry['pub_id'])
-    # > the len of the above link string is 32
-    # > however the t.co wrapper will result in a 20-char link
-    # just found the lengths of t.co short links are increasing
-    # so we'd better keep a large margin for the string lengths
-
     ret = unidecode(ret)  # the tweet package cannot input non-ascii msg
 
-    assert len(ret) <= 140
-    # assert len(ret) <= 140 + 32 - 21
+    # assert len(ret) <= 140
+    assert len(ret) <= 140 + 31 - t_co_len
     return ret
 
 
@@ -70,9 +63,27 @@ def tweet(list_entries):
     client = create_oauth_client()
     unfinished_entries = []
 
+    resp, content = client.request(
+            'https://api.twitter.com/1.1/help/configuration.json',
+            method='GET',
+            force_auth_header=True)
+    if resp['status'] != '200':
+        # uglily try again
+        resp, content = client.request(
+                'https://api.twitter.com/1.1/help/configuration.json',
+                method='GET',
+                force_auth_header=True)
+
+    if resp['status'] != '200':
+        report_error('getting t.co length failed ' + resp['status'], content)
+        return list_entries
+    else:
+        short_url_length = json.loads(content)['short_url_length']
+        # print short_url_length
+
     for entry in list_entries:
         #post_data = urllib.urlencode({'status': tweet_format(entry)})
-        post_data = 'status=' + tweet_format(entry)
+        post_data = 'status=' + tweet_format(entry, short_url_length)
         resp, content = client.request(
                 'https://api.twitter.com/1.1/statuses/update.json',
                 method='POST',
@@ -113,7 +124,6 @@ if __name__ == '__main__':
         'authors': 'Alice and Bob and Charlie and David and Eve',
         'update_type': 'revised',
         'title': 'This is a very very long paper title for testing '
-                + 'the 140 char limits'
+                + 'the 140 char limits...'
     }]
-    print len(tweet_format(entries[0]))
-    # tweet(entries)
+    tweet(entries)
