@@ -40,7 +40,7 @@ common_headers = {
 def new_or_revised(pub_id):
     from google.appengine.api import urlfetch
     result = urlfetch.fetch(
-        'http://eprint.iacr.org/cgi-bin/versions.pl?entry=' + pub_id,
+        'http://eprint.iacr.org/eprint-bin/versions.pl?entry=' + pub_id,
         headers=common_headers,
         deadline=30
     )
@@ -48,8 +48,8 @@ def new_or_revised(pub_id):
     if result.status_code != 200:
         # need to abort the program, so just simply assert false
         assert False, 'new_or_revised urlfetch err: ' \
-                + str(result.status_code)    \
-                + '\n\n' + result.content
+            + str(result.status_code)    \
+            + '\n\n' + result.content
 
     if result.content.count('posted') > 1:
         return 'revised'
@@ -103,7 +103,7 @@ class ePrintParser(HTMLParser):
                     self.entry['update_type'] = 'debug'
                 else:
                     self.entry['update_type'] = \
-                            new_or_revised(self.entry['pub_id'])
+                        new_or_revised(self.entry['pub_id'])
                 return
             elif 'withdrawn' in data and self.data_type is None:
                 self.entry['update_type'] = 'withdrawn'
@@ -122,7 +122,7 @@ class ePrintParser(HTMLParser):
 if __name__ == '__main__':
     import urllib2
     f = urllib2.urlopen(
-            'http://eprint.iacr.org/cgi-bin/search.pl?last=7&title=1')
+        'http://eprint.iacr.org/eprint-bin/search.pl?last=7&title=1')
     content = f.read()
     f.close()
 
