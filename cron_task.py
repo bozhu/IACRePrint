@@ -50,16 +50,16 @@ def retrieve_data():
 
 def task():
     result = urlfetch.fetch(
-            'http://eprint.iacr.org/cgi-bin/search.pl?last=31&title=1',
-            headers=common_headers,
-            deadline=30
+        'http://eprint.iacr.org/eprint-bin/search.pl?last=31&title=1',
+        headers=common_headers,
+        deadline=30
     )
 
     if result.status_code != 200:
         # need to abort the program, so just simply assert false
         assert False, 'task urlfetch err: ' \
-                + str(result.status_code)   \
-                + '\n\n' + result.content
+            + str(result.status_code)   \
+            + '\n\n' + result.content
 
     my_parser = ePrintParser()
     curr_list = my_parser.feed(result.content)
