@@ -5,51 +5,31 @@
         <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
         <meta name="description" content="An unofficial twitter feed for updates of the IACR Cryptology ePrint Archive." />
         <meta name="keywords" content="IACR, ePrint, Updates, Cryptography, Cryptology" />
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-        <script type="text/javascript" src="jquery.tweet.js"></script>
-        <script type='text/javascript'>
-            jQuery(function($){
-                $(".tweet").tweet({
-                    username: "IACRePrint",
-                    count: 5,
-                    loading_text: "loading tweets..."
-                });
-            });
-        </script>
-        <link media="all" rel="stylesheet" type="text/css" href="jquery.tweet.css"/>
         <style>
             body {
                 font-family: Verdana, "Bitstream Vera Sans", "DejaVu Sans", Tahoma, Geneva, Arial, Sans-serif;
                 line-height: 175%;
             }
-
             h1, h2 {
                 font-family: Georgia, Serif;
             }
-
             #wrapper {
-                max-width: 768px;
+                max-width: 600px;
                 margin: 0 auto;
             }
-
             #title, #contact, #follow {
                 text-align: center;
             }
-
-            #follow {
-                margin-top: 2em;
-                margin-bottom: 2em;
-            }
-
             a {
-                color: #0645AD;
+                color: #0084b4;
                 text-decoration: none;
             }
-
             a:hover {
                 text-decoration: underline;
             }
-
+            #tweets {
+                text-align: center;
+            }
             #contact {
                 margin-top: 3em;
                 font-size: 0.75em;
@@ -61,24 +41,23 @@
             <div id='title'>
                 <h1>IACR ePrint Updates</h1>
                 <p>
-                This is an unofficial twitter feed for
-                <br/>
-                <a href='http://eprint.iacr.org'>the IACR Cryptology ePrint Archive</a>.
+                    This is an unofficial twitter feed for<br>
+                    <a href='http://eprint.iacr.org'>the IACR Cryptology ePrint Archive</a>.
                 </p>
             </div>
             <div id='body'>
-                <div id='follow'>
-                    <a href="https://twitter.com/IACRePrint" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @IACRePrint</a>
-                </div>
                 <p>Our bot is monitoring IACR's website, and <b>generating tweets for all new, revised and withdrawn papers</b>.</p>
-                <p>Tweets are formatted as <i>"[update_type] title (authors) iacr_link"</i>. If tweets are too long (over <a href="https://support.twitter.com/articles/15367-posting-a-tweet" target="_blank">the 140 char limit</a>), the parts before <i>iacr_link</i> will be truncated.</p>
+                <p>Tweets are formatted as <i>"[update_type] title (authors) iacr_link"</i>. If tweets are too long (over <a href="https://support.twitter.com/articles/15367-posting-a-tweet">the 140 char limit</a>), the parts before <i>iacr_link</i> will be truncated.</p>
                 <p>Recent updates are as follows.</p>
             </div>
-            <div class="tweet"></div>
+            <div id="tweets">
+                <a class="twitter-timeline" href="https://twitter.com/IACRePrint" width="520" height="520" data-widget-id="363336377112334337">Tweets by @IACRePrint</a>
+                <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+            </div>
             <div id='contact'>
-                <a href='http://about.bozhu.me'>Contact Us</a>
+                If you have any questions or suggestions, please do not hesitate to <a href='http://about.bozhu.me'>contact us.</a><br>
+                The source code of this bot is open at <a href="https://github.com/bozhu/eprint-updates">GitHub</a>.
             </div>
         </div>
-        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
     </body>
 </html>
