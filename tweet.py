@@ -34,6 +34,12 @@ from unidecode import unidecode
 import json
 
 
+# for local debug use
+# def report_error(title, body):
+#     print title
+#     print body
+
+
 def tweet_format(entry, t_co_len):
     ret = u'[' + unicode(entry['update_type']).capitalize() + u']'
     ret += u' ' + entry['title']
@@ -46,7 +52,11 @@ def tweet_format(entry, t_co_len):
 
     # assert len(ret) <= 140
     assert len(ret) <= 140 + 31 - t_co_len
-    return ret
+    # return ret
+    return urllib.quote(ret.replace('~', ' '))
+    # hope nobody uses ~ in his/her name and title
+    # the twitter api will return 401 unautheroized error
+    # if the string contains a ~ (even after URL encoding)
 
 
 def create_oauth_client():
@@ -83,9 +93,7 @@ def tweet(list_entries):
 
     for entry in list_entries:
         # post_data = urllib.urlencode({'status': tweet_format(entry)})
-        # post_data = 'status=' + tweet_format(entry, short_url_length)
-        post_data = 'status=' + \
-            urllib.quote(tweet_format(entry, short_url_length))
+        post_data = 'status=' + tweet_format(entry, short_url_length)
         resp, content = client.request(
             'https://api.twitter.com/1.1/statuses/update.json',
             method='POST',
@@ -122,10 +130,10 @@ def tweet(list_entries):
 
 if __name__ == '__main__':
     entries = [{
-        'pub_id': '1900/123',
-        'authors': 'Alice and Bob and Charlie and David and Eve',
-        'update_type': 'revised',
-        'title': 'This is a very very long paper title for testing '
-        + 'the 140 char limits...'
+        'pub_id': '2013/562',
+        'authors': u'Binglong Chen and Chang-An~Zhao',
+        'update_type': 'new',
+        'title': u'Self-pairings on supersingular elliptic curves'
+        + ' with embedding degree $three$'
     }]
     tweet(entries)

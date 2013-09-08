@@ -20,7 +20,7 @@ handlers:
   upload: static/(.*\.(js|css))
   secure: always
 
-- url: /.*
+- url: /
   static_files: static/index.html
   upload: static/index.html
   secure: always
