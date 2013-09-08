@@ -23,12 +23,12 @@
 """
 
 import oauth2
-#import urllib
-from credentials import             \
-        TWITTER_CONSUMER_KEY,       \
-        TWITTER_CONSUMER_SECRET,    \
-        TWITTER_ACCESS_TOKEN,       \
-        TWITTER_ACCESS_TOKEN_SECRET
+import urllib
+from credentials import         \
+    TWITTER_CONSUMER_KEY,       \
+    TWITTER_CONSUMER_SECRET,    \
+    TWITTER_ACCESS_TOKEN,       \
+    TWITTER_ACCESS_TOKEN_SECRET
 from report import report_error
 from unidecode import unidecode
 import json
@@ -51,9 +51,9 @@ def tweet_format(entry, t_co_len):
 
 def create_oauth_client():
     consumer = oauth2.Consumer(key=TWITTER_CONSUMER_KEY,
-            secret=TWITTER_CONSUMER_SECRET)
+                               secret=TWITTER_CONSUMER_SECRET)
     token = oauth2.Token(key=TWITTER_ACCESS_TOKEN,
-            secret=TWITTER_ACCESS_TOKEN_SECRET)
+                         secret=TWITTER_ACCESS_TOKEN_SECRET)
     new_client = oauth2.Client(consumer, token)
 
     return new_client
@@ -64,15 +64,15 @@ def tweet(list_entries):
     unfinished_entries = []
 
     resp, content = client.request(
-            'https://api.twitter.com/1.1/help/configuration.json',
-            method='GET',
-            force_auth_header=True)
+        'https://api.twitter.com/1.1/help/configuration.json',
+        method='GET',
+        force_auth_header=True)
     if resp['status'] != '200':
         # uglily try again
         resp, content = client.request(
-                'https://api.twitter.com/1.1/help/configuration.json',
-                method='GET',
-                force_auth_header=True)
+            'https://api.twitter.com/1.1/help/configuration.json',
+            method='GET',
+            force_auth_header=True)
 
     if resp['status'] != '200':
         report_error('getting t.co length failed ' + resp['status'], content)
@@ -82,28 +82,30 @@ def tweet(list_entries):
         # print short_url_length
 
     for entry in list_entries:
-        #post_data = urllib.urlencode({'status': tweet_format(entry)})
-        post_data = 'status=' + tweet_format(entry, short_url_length)
+        # post_data = urllib.urlencode({'status': tweet_format(entry)})
+        # post_data = 'status=' + tweet_format(entry, short_url_length)
+        post_data = 'status=' + \
+            urllib.quote(tweet_format(entry, short_url_length))
         resp, content = client.request(
-                'https://api.twitter.com/1.1/statuses/update.json',
-                method='POST',
-                body=post_data,
-                force_auth_header=True)
+            'https://api.twitter.com/1.1/statuses/update.json',
+            method='POST',
+            body=post_data,
+            force_auth_header=True)
 
         if resp['status'] == 401 and 'not authenticate' in content:
             # sometimes not stable (don't know why), just try it again
             client = create_oauth_client()
             resp, content = client.request(
-                  'https://api.twitter.com/1.1/statuses/update.json',
-                  method='POST',
-                  body=post_data,
-                  force_auth_header=True)
+                'https://api.twitter.com/1.1/statuses/update.json',
+                method='POST',
+                body=post_data,
+                force_auth_header=True)
 
         if resp['status'] == 403 and 'duplicate' in content:
             # report but continue to the next entry
             report_error(
-                    'tweet err code ' + resp['status'],
-                    content + '\n\n' + str(entry) + '\n\n' + str(list_entries)
+                'tweet err code ' + resp['status'],
+                content + '\n\n' + str(entry) + '\n\n' + str(list_entries)
             )
             continue
 
@@ -111,8 +113,8 @@ def tweet(list_entries):
             # if it still doesn't work
             unfinished_entries.append(entry)
             report_error(
-                    'tweet err code ' + resp['status'],
-                    content + '\n\n' + str(entry) + '\n\n' + str(list_entries)
+                'tweet err code ' + resp['status'],
+                content + '\n\n' + str(entry) + '\n\n' + str(list_entries)
             )
 
     return unfinished_entries
@@ -124,6 +126,6 @@ if __name__ == '__main__':
         'authors': 'Alice and Bob and Charlie and David and Eve',
         'update_type': 'revised',
         'title': 'This is a very very long paper title for testing '
-                + 'the 140 char limits...'
+        + 'the 140 char limits...'
     }]
     tweet(entries)

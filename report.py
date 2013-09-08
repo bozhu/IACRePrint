@@ -62,4 +62,5 @@ def report_error(title, detail):
 #    if check_last_error(title, detail):
     if True:  # changed cron to once 4 hrs, so do not need this anymore
         mail.send_mail(ADMIN_EMAIL, ERROR_HANDLING_EMAIL,
-                title, detail + '\n\n' + datetime.datetime.now().ctime())
+                       title,
+                       detail + '\n\n' + datetime.datetime.now().ctime())

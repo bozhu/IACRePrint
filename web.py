@@ -33,8 +33,8 @@ class CronHandler(webapp2.RequestHandler):
             from report import report_error
             import traceback
             report_error(
-                    str(detail).splitlines()[0],  # title shouldn't be too long
-                    traceback.format_exc()
+                str(detail).splitlines()[0],  # title shouldn't be too long
+                traceback.format_exc()
             )
 
 
@@ -47,6 +47,6 @@ class TestHandler(webapp2.RequestHandler):
 logging.getLogger().setLevel(logging.DEBUG)
 
 app = webapp2.WSGIApplication([
-            ('/cron', CronHandler),
-            ('/test', TestHandler),
-        ], debug=True)
+    ('/cron', CronHandler),
+    ('/test', TestHandler),
+], debug=True)
