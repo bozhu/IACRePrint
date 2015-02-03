@@ -1,43 +1,10 @@
 #!/usr/bin/env python
 
-"""
-    Copyright (C) 2012 Bo Zhu http://about.bozhu.me
-
-    Permission is hereby granted, free of charge, to any person obtaining a
-    copy of this software and associated documentation files (the "Software"),
-    to deal in the Software without restriction, including without limitation
-    the rights to use, copy, modify, merge, publish, distribute, sublicense,
-    and/or sell copies of the Software, and to permit persons to whom the
-    Software is furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in
-    all copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-    DEALINGS IN THE SOFTWARE.
-"""
-
-import oauth2
-import urllib
-from credentials import         \
-    TWITTER_CONSUMER_KEY,       \
-    TWITTER_CONSUMER_SECRET,    \
-    TWITTER_ACCESS_TOKEN,       \
-    TWITTER_ACCESS_TOKEN_SECRET
-from report import report_error
+import os
+# import urllib
 from unidecode import unidecode
-import json
-
-
-# for local debug use
-# def report_error(title, body):
-#     print title
-#     print body
+from requests_oauthlib import OAuth1Session
+from report import report_error
 
 
 def tweet_format(entry, t_co_len):
@@ -52,19 +19,26 @@ def tweet_format(entry, t_co_len):
 
     # assert len(ret) <= 140
     assert len(ret) <= 140 + 31 - t_co_len
-    # return ret
-    return urllib.quote(ret.replace('~', ' '))
+    # return urllib.quote(ret.replace('~', ' '))
+    return ret.replace('~', ' ')
     # hope nobody uses ~ in his/her name and title
     # the twitter api will return 401 unautheroized error
     # if the string contains a ~ (even after URL encoding)
 
 
 def create_oauth_client():
-    consumer = oauth2.Consumer(key=TWITTER_CONSUMER_KEY,
-                               secret=TWITTER_CONSUMER_SECRET)
-    token = oauth2.Token(key=TWITTER_ACCESS_TOKEN,
-                         secret=TWITTER_ACCESS_TOKEN_SECRET)
-    new_client = oauth2.Client(consumer, token)
+    TWITTER_CONSUMER_KEY = os.environ.get('TWITTER_CONSUMER_KEY')
+    TWITTER_CONSUMER_SECRET = os.environ.get('TWITTER_CONSUMER_SECRET')
+    TWITTER_ACCESS_TOKEN = os.environ.get('TWITTER_ACCESS_TOKEN')
+    TWITTER_ACCESS_TOKEN_SECRET = os.environ.get('TWITTER_ACCESS_TOKEN_SECRET')
+    assert TWITTER_CONSUMER_KEY and TWITTER_CONSUMER_SECRET
+    assert TWITTER_ACCESS_TOKEN and TWITTER_ACCESS_TOKEN_SECRET
+
+    new_client = OAuth1Session(
+        TWITTER_CONSUMER_KEY,
+        client_secret=TWITTER_CONSUMER_SECRET,
+        resource_owner_key=TWITTER_ACCESS_TOKEN,
+        resource_owner_secret=TWITTER_ACCESS_TOKEN_SECRET)
 
     return new_client
 
@@ -73,56 +47,51 @@ def tweet(list_entries):
     client = create_oauth_client()
     unfinished_entries = []
 
-    resp, content = client.request(
-        'https://api.twitter.com/1.1/help/configuration.json',
-        method='GET',
-        force_auth_header=True)
-    if resp['status'] != '200':
+    resp = client.get('https://api.twitter.com/1.1/help/configuration.json')
+    if resp.status_code != 200:
         # uglily try again
-        resp, content = client.request(
-            'https://api.twitter.com/1.1/help/configuration.json',
-            method='GET',
-            force_auth_header=True)
+        resp = client.get(
+            'https://api.twitter.com/1.1/help/configuration.json')
 
-    if resp['status'] != '200':
-        report_error('getting t.co length failed ' + resp['status'], content)
+    if resp.status_code != 200:
+        report_error('getting t.co length failed ' + str(resp.status_code),
+                     resp.text)
         return list_entries
     else:
-        short_url_length = json.loads(content)['short_url_length']
+        short_url_length = resp.json()['short_url_length']
         # print short_url_length
 
     for entry in list_entries:
-        # post_data = urllib.urlencode({'status': tweet_format(entry)})
-        post_data = 'status=' + tweet_format(entry, short_url_length)
-        resp, content = client.request(
+        post_data = {'status': tweet_format(entry, short_url_length)}
+        resp = client.post(
             'https://api.twitter.com/1.1/statuses/update.json',
-            method='POST',
-            body=post_data,
-            force_auth_header=True)
+            data=post_data)
 
-        if resp['status'] == 401 and 'not authenticate' in content:
+        if resp.status_code == 401 and 'not authenticate' in resp.text:
             # sometimes not stable (don't know why), just try it again
             client = create_oauth_client()
-            resp, content = client.request(
+            resp = client.post(
                 'https://api.twitter.com/1.1/statuses/update.json',
-                method='POST',
-                body=post_data,
-                force_auth_header=True)
+                data=post_data)
 
-        if resp['status'] == 403 and 'duplicate' in content:
+        if resp.status_code == 403 and 'duplicate' in resp.text:
             # report but continue to the next entry
             report_error(
-                'tweet err code ' + resp['status'],
-                content + '\n\n' + str(entry) + '\n\n' + str(list_entries)
+                'tweet err code ' + str(resp.status_code),
+                '*** response content\n' + resp.text
+                + '\n\n*** this entry:\n' + str(entry)
+                + '\n\n*** list of entries:\n' + str(list_entries)
             )
             continue
 
-        if resp['status'] != '200':
+        if resp.status_code != 200:
             # if it still doesn't work
             unfinished_entries.append(entry)
             report_error(
-                'tweet err code ' + resp['status'],
-                content + '\n\n' + str(entry) + '\n\n' + str(list_entries)
+                'tweet err code ' + str(resp.status_code),
+                '*** response content\n' + resp.text
+                + '\n\n*** this entry:\n' + str(entry)
+                + '\n\n*** list of entries:\n' + str(list_entries)
             )
 
     return unfinished_entries
