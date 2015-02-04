@@ -2,3 +2,4 @@ Unidecode==0.04.17
 raven==5.1.1
 requests==2.5.1
 requests-oauthlib==0.4.2
+redis==2.10.3
