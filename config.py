@@ -33,3 +33,6 @@ assert TWITTER_ACCESS_TOKEN and TWITTER_ACCESS_TOKEN_SECRET
 _SENTRY_DSN = os.environ.get('SENTRY_DSN')
 assert _SENTRY_DSN
 sentry_client = raven.Client(_SENTRY_DSN)
+
+
+REDIS_URL = os.environ.get('REDISCLOUD_URL', 'redis://localhost:6379')

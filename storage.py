@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 
-import os
 import redis
 import urlparse
 import pickle
 
+from config import REDIS_URL
 
-redis_url = urlparse.urlparse(
-    os.environ.get('REDISCLOUD_URL',
-                   'redis://localhost:6379'))
+
+redis_url = urlparse.urlparse(REDIS_URL)
 redis_storage = redis.Redis(
     host=redis_url.hostname,
     port=redis_url.port,
