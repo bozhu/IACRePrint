@@ -2,7 +2,7 @@
 
 import requests
 
-from parser import EPrintParser
+from eprint_parser import EPrintParser
 from tweet import tweet
 from storage import retrieve_data, store_data
 from config import HTTP_HEADERS, sentry_client

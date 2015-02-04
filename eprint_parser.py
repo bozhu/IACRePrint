@@ -91,7 +91,18 @@ class EPrintParser(HTMLParser):
         if self.data_type == 'link':
             self.entry['pub_id'] = data
         elif self.data_type:
-            self.entry[self.data_type] = data
+            if self.data_type in self.entry:
+                self.entry[self.data_type] += data
+            else:
+                self.entry[self.data_type] = data
+
+    def handle_charref(self, data):
+        data = '&#' + data + ';'
+        if self.data_type:
+            if self.data_type in self.entry:
+                self.entry[self.data_type] += HTMLParser().unescape(data)
+            else:
+                self.entry[self.data_type] = HTMLParser().unescape(data)
 
 
 if __name__ == '__main__':
