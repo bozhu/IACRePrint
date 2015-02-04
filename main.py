@@ -2,19 +2,22 @@
 
 
 import cPickle
-from parser import EPrintParser, HEADERS
-from tweet import tweet
 import requests
 
+from parser import EPrintParser
+from tweet import tweet
+from config import HTTP_HEADERS, sentry_client
 
+
+@sentry_client.capture_exceptions
 def main():
     result = requests.get(
         'http://eprint.iacr.org/eprint-bin/search.pl?last=31&title=1',
-        headers=HEADERS
+        headers=HTTP_HEADERS
     )
 
     if result.status_code != 200:
-        msg = 'task urlfetch err: ' + str(result.status_code)   \
+        msg = 'ret: ' + str(result.status_code)   \
             + '\n\n' + result.text
         raise Exception(msg)
 

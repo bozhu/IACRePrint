@@ -4,30 +4,28 @@
 import requests
 from HTMLParser import HTMLParser
 
-
-HEADERS = {
-    "Accept":          "text/html,application/xhtml+xml,application/xml;"
-                       + "q=0.9,*/*;q=0.8",
-    "Accept-Language": "en-us,en;q=0.5",
-    "Accept-Encoding": "deflate",
-    "Accept-Charset":  "ISO-8859-1,utf-8;q=0.7,*;q=0.7",
-    "Connection":      "keep-alive",
-    "User-Agent":      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; "
-                       + "rv:7.0.1) Gecko/20100101 Firefox/7.0.1",
-}
+from config import HTTP_HEADERS
 
 
 def new_or_revised(pub_id):
-    result = requests.get(
+    resp = requests.get(
         'http://eprint.iacr.org/eprint-bin/versions.pl?entry=' + pub_id,
-        headers=HEADERS
+        headers=HTTP_HEADERS
     )
 
-    assert result.status_code == 200,   \
-        'new_or_revised requests err: ' \
-        + str(result.status_code) + '\n\n' + result.text
+    if resp.status_code != 200:
+        # try again
+        resp = requests.get(
+            'http://eprint.iacr.org/eprint-bin/versions.pl?entry=' + pub_id,
+            headers=HTTP_HEADERS
+        )
 
-    if result.text.count('posted') > 1:
+    if resp.status_code != 200:
+        raise Exception(
+            'new_or_revised request (' + pub_id + 'error: ' + resp.status_code
+            + '\n\n' + resp.text)
+
+    if resp.text.count('posted') > 1:
         return 'revised'
     else:
         return 'new'

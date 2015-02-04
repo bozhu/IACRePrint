@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
-import os
 # import urllib
 from unidecode import unidecode
 from requests_oauthlib import OAuth1Session
-from report import report_error
+
+from config import TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, \
+    TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET, \
+    sentry_client
 
 
 def tweet_format(entry, t_co_len):
@@ -27,13 +29,6 @@ def tweet_format(entry, t_co_len):
 
 
 def create_oauth_client():
-    TWITTER_CONSUMER_KEY = os.environ.get('TWITTER_CONSUMER_KEY')
-    TWITTER_CONSUMER_SECRET = os.environ.get('TWITTER_CONSUMER_SECRET')
-    TWITTER_ACCESS_TOKEN = os.environ.get('TWITTER_ACCESS_TOKEN')
-    TWITTER_ACCESS_TOKEN_SECRET = os.environ.get('TWITTER_ACCESS_TOKEN_SECRET')
-    assert TWITTER_CONSUMER_KEY and TWITTER_CONSUMER_SECRET
-    assert TWITTER_ACCESS_TOKEN and TWITTER_ACCESS_TOKEN_SECRET
-
     new_client = OAuth1Session(
         TWITTER_CONSUMER_KEY,
         client_secret=TWITTER_CONSUMER_SECRET,
@@ -49,13 +44,18 @@ def tweet(list_entries):
 
     resp = client.get('https://api.twitter.com/1.1/help/configuration.json')
     if resp.status_code != 200:
-        # uglily try again
+        # try again
         resp = client.get(
             'https://api.twitter.com/1.1/help/configuration.json')
 
     if resp.status_code != 200:
-        report_error('getting t.co length failed ' + str(resp.status_code),
-                     resp.text)
+        sentry_client.captureMessage(
+            'getting t.co length failed',
+            extra={
+                'status_code': resp.status_code,
+                'error_text': resp.text
+            }
+        )
         return list_entries
     else:
         short_url_length = resp.json()['short_url_length']
@@ -76,22 +76,28 @@ def tweet(list_entries):
 
         if resp.status_code == 403 and 'duplicate' in resp.text:
             # report but continue to the next entry
-            report_error(
+            sentry_client.captureMessage(
                 'tweet err code ' + str(resp.status_code),
-                '*** response content\n' + resp.text
-                + '\n\n*** this entry:\n' + str(entry)
-                + '\n\n*** list of entries:\n' + str(list_entries)
+                extra={
+                    'status_code': resp.status_code,
+                    'error_text': resp.text,
+                    'current_entry': entry,
+                    'list_of_entries': list_entries
+                }
             )
             continue
 
         if resp.status_code != 200:
             # if it still doesn't work
             unfinished_entries.append(entry)
-            report_error(
+            sentry_client.captureMessage(
                 'tweet err code ' + str(resp.status_code),
-                '*** response content\n' + resp.text
-                + '\n\n*** this entry:\n' + str(entry)
-                + '\n\n*** list of entries:\n' + str(list_entries)
+                extra={
+                    'status_code': resp.status_code,
+                    'error_text': resp.text,
+                    'current_entry': entry,
+                    'list_of_entries': list_entries
+                }
             )
 
     return unfinished_entries
