@@ -64,8 +64,8 @@ class Storage():
             self._cur.execute("""UPDATE eprint
                                  SET value = %s
                                  WHERE key = %s""",
-                               (psycopg2.Binary(pickle.dumps(data)),
-                                DATABASE_KEY_STRING))
+                              (psycopg2.Binary(pickle.dumps(data)),
+                               DATABASE_KEY_STRING))
         self._con.commit()
 
 
