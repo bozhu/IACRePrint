@@ -4,7 +4,7 @@ import requests
 
 from eprint_parser import EPrintParser
 from tweet import tweet
-from storage import retrieve_data, store_data
+from storage import Storage
 from config import HTTP_HEADERS, sentry_client
 
 
@@ -23,18 +23,19 @@ def main():
     my_parser = EPrintParser()
     curr_list = my_parser.feed(resp.text)
 
-    prev_list = retrieve_data()
+    my_storage = Storage()
+    prev_list = my_storage.retrieve()
     if prev_list is None \
             or not isinstance(prev_list, list) \
             or len(prev_list) == 0:
-        store_data(curr_list)
+        my_storage.save(curr_list)
 
     else:
         list_updated = [i for i in curr_list if i not in prev_list]
         if len(list_updated):
             list_untweeted = tweet(list_updated)
             list_to_save = [i for i in curr_list if i not in list_untweeted]
-            store_data(list_to_save)
+            my_storage.save(list_to_save)
 
 
 if __name__ == '__main__':

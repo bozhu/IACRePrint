@@ -2,23 +2,26 @@
 
 import random
 import unittest
-from storage import retrieve_data, store_data
+from storage import Storage
 
 
 class TestStorage(unittest.TestCase):
+    def setUp(self):
+        self.my_storage = Storage()
+
     def testNonexistence(self):
-        data = retrieve_data('not-exist')
+        data = self.my_storage.retrieve('not-exist')
         self.assertIsNone(data)
 
     def testSetAndGet(self):
         data = {
             random.getrandbits(128): [random.getrandbits(128)]
         }
-        store_data(data)
-        self.assertEqual(retrieve_data(), data)
+        self.my_storage.save(data)
+        self.assertEqual(self.my_storage.retrieve(), data)
 
         new_data = {
             random.getrandbits(128): [random.getrandbits(128)]
         }
-        store_data(new_data)
-        self.assertEqual(retrieve_data(), new_data)
+        self.my_storage.save(new_data)
+        self.assertEqual(self.my_storage.retrieve(), new_data)

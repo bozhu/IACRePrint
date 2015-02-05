@@ -35,4 +35,5 @@ assert _SENTRY_DSN
 sentry_client = raven.Client(_SENTRY_DSN)
 
 
-REDIS_URL = os.environ.get('REDISCLOUD_URL', 'redis://localhost:6379')
+DATABASE_URL = os.environ.get('DATABASE_URL', 'postgres://localhost:5432/')
+DATABASE_KEY_STRING = 'prelist'
