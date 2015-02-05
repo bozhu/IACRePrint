@@ -35,5 +35,13 @@ assert _SENTRY_DSN
 sentry_client = raven.Client(_SENTRY_DSN)
 
 
-DATABASE_URL = os.environ.get('DATABASE_URL', 'postgres://localhost:5432/')
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL is None:
+    DATABASE_URL = 'postgres://'
+    if os.environ.get('PG_USER') is not None:
+        DATABASE_URL += os.environ.get('PG_USER')
+        if os.environ.get('PG_PASSWORD') is not None:
+            DATABASE_URL += ':' + os.environ.get('PG_PASSWORD')
+        DATABASE_URL += '@'
+    DATABASE_URL += 'localhost:5432/test'
 DATABASE_KEY_STRING = 'prelist'
