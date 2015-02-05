@@ -4,9 +4,7 @@ import psycopg2
 import urlparse
 import pickle
 
-from config import DATABASE_URL, \
-    DATABASE_KEY_STRING, \
-    sentry_client
+from config import DATABASE_URL, DATABASE_KEY_STRING
 
 
 class Storage():
@@ -33,7 +31,8 @@ class Storage():
                                      value  BYTEA
                                  )""")
             self._con.commit()
-            sentry_client.captureMessage('Created a new table')
+            # from config import sentry_client
+            # sentry_client.captureMessage('Created a new table')
 
     def retrieve(self, key=DATABASE_KEY_STRING):
         self._cur.execute("""SELECT value
