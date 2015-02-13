@@ -14,7 +14,7 @@ TEST_ENTRY = {
     + ' with embedding degree $three$'
 }
 TEST_STRING = '[New] Self-pairings on supersingular elliptic curves with ' \
-              + 'embedding degree $three$ (Binglong Chen and Ch... ' \
+              + 'embedding degree $three$ (Binglong Chen and C... ' \
               + 'http://eprint.iacr.org/2013/562'
 
 

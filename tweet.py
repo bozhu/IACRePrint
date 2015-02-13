@@ -14,13 +14,13 @@ def tweet_format(entry, t_co_len):
     ret += u' ' + entry['title']
     ret += u' (' + entry['authors'] + u') '
 
-    if len(ret) > 140 - t_co_len - 1:  # -1 for an extra space
-        ret = ret[:(140 - t_co_len - 1 - 3)] + u'...'
-    ret += u' http://eprint.iacr.org/' + unicode(entry['pub_id'])
     ret = unidecode(ret)  # the tweet package cannot input non-ascii msg
+    if len(ret) > 140 - t_co_len - 2:  # -2 for extra space
+        ret = ret[:(140 - t_co_len - 2 - 3)] + u'...'
+    ret += u' http://eprint.iacr.org/' + unicode(entry['pub_id'])
 
     # assert len(ret) <= 140
-    assert len(ret) <= 140 + 31 - t_co_len
+    # assert len(ret) <= 140 + 31 - t_co_len
     # return urllib.quote(ret.replace('~', ' '))
     return ret.replace('~', ' ')
     # hope nobody uses ~ in his/her name and title
@@ -109,6 +109,12 @@ if __name__ == '__main__':
         'authors': u'Binglong Chen and Chang-An~Zhao',
         'update_type': 'new',
         'title': u'Self-pairings on supersingular elliptic curves'
-        + ' with embedding degree $three$'
+                 + ' with embedding degree $three$'
+    }, {
+        'authors': 'Pierre-Alain Fouque and Moon Sung Lee '
+                   + 'and Tancr\`ede Lepoint and Mehdi Tibouchi',
+        'pub_id': u'2014/1024',
+        'title': u'Cryptanalysis of the Co-ACD Assumption',
+        'update_type': 'revised'
     }]
     tweet(entries)
