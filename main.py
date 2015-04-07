@@ -11,7 +11,7 @@ from config import HTTP_HEADERS, sentry_client
 @sentry_client.capture_exceptions
 def main():
     resp = requests.get(
-        'http://eprint.iacr.org/eprint-bin/search.pl?last=31&title=1',
+        'http://eprint.iacr.org/eprint-bin/search.pl?last=7&title=1',
         headers=HTTP_HEADERS
     )
 
