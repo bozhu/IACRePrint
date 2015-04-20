@@ -15,6 +15,9 @@ def tweet_format(entry, t_co_len):
     ret += u' (' + entry['authors'] + u') '
 
     ret = unidecode(ret)  # the tweet package cannot input non-ascii msg
+    ret = ret.replace('  ', ' ')  # what's wrong with the recent updates?
+    ret = ret.replace('  ', ' ')
+
     if len(ret) > 140 - t_co_len - 2:  # -2 for extra space
         ret = ret[:(140 - t_co_len - 2 - 3)] + u'...'
     ret += u' http://eprint.iacr.org/' + unicode(entry['pub_id'])
