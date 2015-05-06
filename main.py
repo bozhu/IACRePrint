@@ -23,6 +23,12 @@ def main():
     my_parser = EPrintParser()
     curr_list = my_parser.feed(resp.text)
 
+    if curr_list is None \
+            or not isinstance(curr_list, list) \
+            or len(curr_list) == 0:
+        # in case the crawled page has problems
+        return
+
     my_storage = Storage()
     prev_list = my_storage.retrieve()
     if prev_list is None \
