@@ -18,9 +18,8 @@ def tweet_format(entry, t_co_len):
     ret = ret.replace('  ', ' ')  # what's wrong with the recent updates?
     ret = ret.replace('  ', ' ')
 
-    # + 10 for changing eprint.iacr.org to ia.cr
-    if len(ret) > 140 - t_co_len - 2 + 10:  # -2 for extra space
-        ret = ret[:(140 - t_co_len - 2 - 3 + 10)] + u'...'
+    if len(ret) > 140 - t_co_len - 2:  # -2 for extra space
+        ret = ret[:(140 - t_co_len - 2 - 3)] + u'...'
     ret += u' http://ia.cr/' + unicode(entry['pub_id'])
 
     # assert len(ret) <= 140

@@ -13,16 +13,13 @@ TEST_ENTRY = {
     'title': u'Self-pairings on supersingular elliptic curves'
     + ' with embedding degree $three$'
 }
-TEST_STRING = '[New] Self-pairings on supersingular elliptic curves with '    \
-              + 'embedding degree $three$ (Binglong Chen and Chang-An Zh... ' \
+TEST_STRING = '[New] Self-pairings on supersingular elliptic curves with ' \
+              + 'embedding degree $three$ (Binglong Chen and C... ' \
               + 'http://ia.cr/2013/562'
 
 
 class TestStorage(unittest.TestCase):
     def testTweetFormat(self):
-        print '******'
-        print tweet_format(TEST_ENTRY, 32)
-        print '******'
         self.assertEqual(tweet_format(TEST_ENTRY, 32), TEST_STRING)
 
     def testCreateOauthClient(self):
