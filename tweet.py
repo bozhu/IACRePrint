@@ -77,7 +77,8 @@ def tweet(list_entries):
                 'https://api.twitter.com/1.1/statuses/update.json',
                 data=post_data)
 
-        if resp.status_code == 403 and 'duplicate' in resp.text:
+        # if resp.status_code == 403 and 'duplicate' in resp.text:
+        if resp.status_code == 403:
             # report but continue to the next entry
             sentry_client.captureMessage(
                 'tweet err code ' + str(resp.status_code),

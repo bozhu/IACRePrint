@@ -25,7 +25,7 @@ def main():
 
     if curr_list is None \
             or not isinstance(curr_list, list) \
-            or len(curr_list) < 10:
+            or len(curr_list) < 20:
         # in case the crawled page has problems
         return
 
@@ -37,6 +37,10 @@ def main():
         my_storage.save(curr_list)
 
     else:
+        sentry_client.user_context({
+            'prev_list': prev_list,
+            'curr_list': curr_list,
+        })
         list_updated = [i for i in curr_list if i not in prev_list]
         if len(list_updated):
             list_untweeted = tweet(list_updated)
