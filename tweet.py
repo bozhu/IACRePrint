@@ -18,12 +18,12 @@ def tweet_format(entry, t_co_len):
     ret = ret.replace('  ', ' ')  # what's wrong with the recent updates?
     ret = ret.replace('  ', ' ')
 
-    if len(ret) > 140 - t_co_len - 2:  # -2 for extra space
-        ret = ret[:(140 - t_co_len - 2 - 3)] + u'...'
+    if len(ret) > 280 - t_co_len - 2:  # -2 for extra space
+        ret = ret[:(280 - t_co_len - 2 - 3)] + u'...'
     ret += u' http://ia.cr/' + unicode(entry['pub_id'])
 
-    # assert len(ret) <= 140
-    # assert len(ret) <= 140 + 31 - t_co_len
+    # assert len(ret) <= 280
+    # assert len(ret) <= 280 + 31 - t_co_len
     # return urllib.quote(ret.replace('~', ' '))
     return ret.replace('~', ' ')
     # hope nobody uses ~ in his/her name and title
